@@ -6,25 +6,27 @@ import '../blocs/probability_state.dart';
 import '../widgets/probability_table.dart';
 
 class ProbabilityScreen extends StatelessWidget {
+  const ProbabilityScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Team Probabilities'),
+        title: const Text('Team Probabilities'),
       ),
       body: BlocBuilder<ProbabilityBloc, ProbabilityState>(
         builder: (context, state) {
           if (state is ProbabilityInitial) {
             BlocProvider.of<ProbabilityBloc>(context).add(FetchProbabilities());
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (state is ProbabilityLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (state is ProbabilityLoaded) {
             return ProbabilityTable(probabilities: state.probabilities);
           } else if (state is ProbabilityError) {
             return Center(child: Text('Error: ${state.message}'));
           }
-          return Center(child: Text('Unknown state'));
+          return const Center(child: Text('Unknown state'));
         },
       ),
     );

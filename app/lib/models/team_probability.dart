@@ -16,15 +16,13 @@ class TeamProbability {
   factory TeamProbability.fromJson(String name, Map<String, dynamic> json) {
     return TeamProbability(
       name: name,
-      projectedPoints: (json['average_points'][name] as num).toDouble(),
+      projectedPoints: json['average_points'][name].toDouble(),
       top8Probability:
-          (json['qualification_probabilities_top8'][name] as num).toDouble(),
+          json['qualification_probabilities_top8'][name].toDouble(),
       top24Probability:
-          (json['qualification_probabilities_top24'][name] as num).toDouble(),
+          json['qualification_probabilities_top24'][name].toDouble(),
       positionProbabilities:
-          (json['position_probabilities'][name] as List<dynamic>)
-              .map((e) => (e as num).toDouble())
-              .toList(),
+          List<double>.from(json['position_probabilities'][name]),
     );
   }
 }

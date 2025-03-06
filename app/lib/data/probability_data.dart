@@ -9,12 +9,8 @@ class ProbabilityData {
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       List<TeamProbability> probabilities = [];
-      jsonData['average_points']?.forEach((key, value) {
-        try {
-          probabilities.add(TeamProbability.fromJson(key, jsonData));
-        } catch (e) {
-          print("Error parsing data for team $key: $e");
-        }
+      jsonData['average_points'].forEach((key, value) {
+        probabilities.add(TeamProbability.fromJson(key, jsonData));
       });
       return probabilities;
     } else {
