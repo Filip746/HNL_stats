@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HNL Vjerojatnosti</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>HNL Vjerojatnosti</h1>
+
+    <h2>Šanse za osvajanje prvenstva i ulazak u top 4</h2>
+    <table>
+        <tr>
+            <th>Tim</th>
+            <th>Proj. bodovi</th>
+            <th>Prvak (%)</th>
+            <th>Top 4 (%)</th>
+        </tr>
+        {% for team, points in average_points.items() %}
+        <tr>
+            <td>{{ team }}</td>
+            <td>{{ points|round(2) }}</td>
+            <td>{{ qualification_probabilities_top8[team]|round(2) }}</td>
+            <td>{{ qualification_probabilities_top24[team]|round(2) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Vjerojatnosti pozicija za svaki klub (%)</h2>
+    <table>
+        <tr>
+            <th>Tim</th>
+            {% for i in range(1, 11) %}
+            <th>{{ i }}</th>
+            {% endfor %}
+        </tr>
+        {% for team, probabilities in position_probabilities.items() %}
+        <tr>
+            <td>{{ team }}</td>
+            {% for prob in probabilities[:10] %}
+            <td>{{ prob|round(2) }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

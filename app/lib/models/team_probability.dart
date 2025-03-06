@@ -3,20 +3,28 @@ class TeamProbability {
   final double projectedPoints;
   final double top8Probability;
   final double top24Probability;
+  final List<double> positionProbabilities;
 
   TeamProbability({
     required this.name,
     required this.projectedPoints,
     required this.top8Probability,
     required this.top24Probability,
+    required this.positionProbabilities,
   });
 
-  factory TeamProbability.fromJson(Map<String, dynamic> json) {
+  factory TeamProbability.fromJson(String name, Map<String, dynamic> json) {
     return TeamProbability(
-      name: json['name'],
-      projectedPoints: json['projected_points'],
-      top8Probability: json['top8_probability'].toDouble(),
-      top24Probability: json['top24_probability'].toDouble(),
+      name: name,
+      projectedPoints: (json['average_points'][name] as num).toDouble(),
+      top8Probability:
+          (json['qualification_probabilities_top8'][name] as num).toDouble(),
+      top24Probability:
+          (json['qualification_probabilities_top24'][name] as num).toDouble(),
+      positionProbabilities:
+          (json['position_probabilities'][name] as List<dynamic>)
+              .map((e) => (e as num).toDouble())
+              .toList(),
     );
   }
 }

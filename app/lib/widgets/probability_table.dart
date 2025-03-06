@@ -41,72 +41,70 @@ class _ProbabilityTableState extends State<ProbabilityTable> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: DataTable(
-          headingRowColor: WidgetStateProperty.all(Colors.blue[100]),
-          dataRowColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) {
-              return Colors.grey[300];
-            }
-            return states.contains(WidgetState.hovered)
-                ? Colors.grey[100]
-                : null;
-          }),
-          sortColumnIndex: _sortColumnIndex,
-          sortAscending: _sortAscending,
-          columns: [
-            DataColumn(
-              label: Text('Tim'),
-              onSort: (columnIndex, ascending) =>
-                  _sort<String>((d) => d.name, columnIndex, ascending),
-            ),
-            DataColumn(
-              label: Text('Bodovi'),
-              numeric: true,
-              onSort: (columnIndex, ascending) =>
-                  _sort<num>((d) => d.projectedPoints, columnIndex, ascending),
-            ),
-            DataColumn(
-              label: Text('Prvak (%)'),
-              numeric: true,
-              onSort: (columnIndex, ascending) =>
-                  _sort((d) => d.top8Probability, columnIndex, ascending),
-            ),
-            DataColumn(
-              label: Text('Top 4 (%)'),
-              numeric: true,
-              onSort: (columnIndex, ascending) =>
-                  _sort((d) => d.top24Probability, columnIndex, ascending),
-            ),
-          ],
-          rows: probabilities
-              .map((team) => DataRow(
-                    cells: [
-                      DataCell(
-                        Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/${team.name.toLowerCase().replaceAll(" ", "_")}.png',
-                              width: 30,
-                              height: 30,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.sports_soccer),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(team.name),
-                          ],
-                        ),
+      child: DataTable(
+        headingRowColor: MaterialStateProperty.all(Colors.blue[100]),
+        dataRowColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) return Colors.grey[300];
+          return states.contains(MaterialState.hovered)
+              ? Colors.grey[100]
+              : null;
+        }),
+        sortColumnIndex: _sortColumnIndex,
+        sortAscending: _sortAscending,
+        columns: [
+          DataColumn(
+            label: Text('Tim', style: TextStyle(fontWeight: FontWeight.bold)),
+            onSort: (columnIndex, ascending) =>
+                _sort((d) => d.name, columnIndex, ascending),
+          ),
+          DataColumn(
+            label:
+                Text('Bodovi', style: TextStyle(fontWeight: FontWeight.bold)),
+            numeric: true,
+            onSort: (columnIndex, ascending) =>
+                _sort((d) => d.projectedPoints, columnIndex, ascending),
+          ),
+          DataColumn(
+            label: Text('Prvak (%)',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            numeric: true,
+            onSort: (columnIndex, ascending) =>
+                _sort((d) => d.top8Probability, columnIndex, ascending),
+          ),
+          DataColumn(
+            label: Text('Top 4 (%)',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            numeric: true,
+            onSort: (columnIndex, ascending) =>
+                _sort((d) => d.top24Probability, columnIndex, ascending),
+          ),
+        ],
+        rows: probabilities
+            .map((team) => DataRow(
+                  cells: [
+                    DataCell(
+                      Row(
+                        children: [
+                          Image.asset(
+                            'assets/images/${team.name.toLowerCase().replaceAll(" ", "_")}.png',
+                            width: 30,
+                            height: 30,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Icon(Icons.sports_soccer),
+                          ),
+                          SizedBox(width: 8),
+                          Text(team.name),
+                        ],
                       ),
-                      DataCell(Text(team.projectedPoints.toStringAsFixed(0))),
-                      DataCell(
-                          Text('${team.top8Probability.toStringAsFixed(2)}%')),
-                      DataCell(
-                          Text('${team.top24Probability.toStringAsFixed(2)}%')),
-                    ],
-                  ))
-              .toList(),
-        ),
+                    ),
+                    DataCell(Text(team.projectedPoints.toStringAsFixed(0))),
+                    DataCell(
+                        Text('${team.top8Probability.toStringAsFixed(2)}%')),
+                    DataCell(
+                        Text('${team.top24Probability.toStringAsFixed(2)}%')),
+                  ],
+                ))
+            .toList(),
       ),
     );
   }
