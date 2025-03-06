@@ -29,9 +29,10 @@ void main() {
     expect(find.text('Hajduk Split'), findsOneWidget);
 
     // Verify that probability columns are present
-    expect(find.text('Proj. Points'), findsOneWidget);
-    expect(find.text('Top 8 (%)'), findsOneWidget);
-    expect(find.text('Top 24 (%)'), findsOneWidget);
+    expect(find.text('Tim'), findsOneWidget);
+    expect(find.text('Bodovi'), findsOneWidget);
+    expect(find.text('Prvak (%)'), findsOneWidget);
+    expect(find.text('Top 4 (%)'), findsOneWidget);
 
     // Verify that some probability data is displayed
     expect(find.textContaining('%'), findsWidgets);
