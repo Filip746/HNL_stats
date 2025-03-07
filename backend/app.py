@@ -16,6 +16,7 @@ def home():
                            average_points=average_points, 
                            qualification_probabilities_top8=qualification_probabilities_top8, 
                            qualification_probabilities_top24=qualification_probabilities_top24)
+
 @app.route('/probabilities')
 def probabilities():
     num_simulations = 10000

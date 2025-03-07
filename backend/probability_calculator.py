@@ -1,5 +1,26 @@
 import random
 import math
+import requests
+import csv
+from datetime import datetime
+
+def fetch_elo_ratings():
+    today = datetime.today().date()
+    iso_date = today.isoformat()  # This will give you the date in ISO format (YYYY-MM-DD)
+    url = f"http://api.clubelo.com/{iso_date}"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        # Since the API returns a CSV file, we need to parse it
+        csv_reader = csv.reader(response.text.splitlines())
+        teams = {}
+        for row in csv_reader:
+            if len(row) > 5 and row[2] == 'CRO':  # Check if country is Croatia
+                teams[row[1]] = float(row[4])  # Assuming Club name is in the 2nd column and Elo in the 5th
+        return teams
+    else:
+        print("Failed to fetch Elo ratings")
+        return None
 
 def simulate_match(home_team_elo, away_team_elo, home_advantage=50, k=20):
     adjusted_home_elo = home_team_elo + home_advantage
@@ -87,53 +108,69 @@ def print_results(position_probabilities, average_points, qualification_probabil
     
     print("=" * 100)
 
-initial_points = {
-    "Rijeka": 46,
-    "Hajduk Split": 45,
-    "D. Zagreb": 39,
-    "Varazdin": 33,
-    "Slaven Belupo": 32,
-    "Osijek": 30,
-    "Lok. Zagreb": 28,
-    "Istra 1961": 28,
-    "Gorica": 24,
-    "Sibenik": 18
-}
-
-teams = {
-    "D. Zagreb": 1527,
-    "Rijeka": 1473,
-    "Hajduk Split": 1468,
-    "Osijek": 1385,
-    "Lok. Zagreb": 1359,
-    "Varazdin": 1321,
-    "Istra 1961": 1312,
-    "Slaven Belupo": 1303,
-    "Gorica": 1268,
-    "Sibenik": 1187
-}
+# Fetch Elo ratings from API
+elo_ratings = fetch_elo_ratings()
+if elo_ratings is not None:
+    teams = elo_ratings
+    initial_points = {
+        "Dinamo Zagreb": 39,
+        "Rijeka": 46,
+        "Hajduk": 45,
+        "Osijek": 30,
+        "Lok Zagreb": 28,
+        "Varazdin": 33,
+        "Istra 1961": 28,
+        "Slaven Belupo": 32,
+        "HNK Gorica": 24,
+        "Sibenik": 18
+    }
+else:
+    teams = {
+        "Dinamo Zagreb": 1527,
+        "Rijeka": 1473,
+        "Hajduk": 1468,
+        "Osijek": 1385,
+        "Lok Zagreb": 1359,
+        "Varazdin": 1321,
+        "Istra 1961": 1312,
+        "Slaven Belupo": 1303,
+        "HNK Gorica": 1268,
+        "Sibenik": 1187
+    }
+    initial_points = {
+        "Dinamo Zagreb": 39,
+        "Rijeka": 46,
+        "Hajduk": 45,
+        "Osijek": 30,
+        "Lok Zagreb": 28,
+        "Varazdin": 33,
+        "Istra 1961": 28,
+        "Slaven Belupo": 32,
+        "HNK Gorica": 24,
+        "Sibenik": 18
+    }
 
 fixtures = [
-    ("Rijeka", "Sibenik"), ("Varazdin", "Istra 1961"), ("Lok. Zagreb", "Osijek"),
-    ("Hajduk Split", "Gorica"), ("Slaven Belupo", "D. Zagreb"), ("Gorica", "Slaven Belupo"),
-    ("Sibenik", "Istra 1961"), ("D. Zagreb", "Lok. Zagreb"), ("Osijek", "Varazdin"),
-    ("Rijeka", "Hajduk Split"), ("Hajduk Split", "Sibenik"), ("Istra 1961", "Osijek"),
-    ("Lok. Zagreb", "Gorica"), ("Slaven Belupo", "Rijeka"), ("Varazdin", "D. Zagreb"),
-    ("Istra 1961", "D. Zagreb"), ("Lok. Zagreb", "Rijeka"), ("Sibenik", "Osijek"),
-    ("Slaven Belupo", "Hajduk Split"), ("Varazdin", "Gorica"), ("D. Zagreb", "Osijek"),
-    ("Gorica", "Istra 1961"), ("Hajduk Split", "Lok. Zagreb"), ("Rijeka", "Varazdin"),
-    ("Slaven Belupo", "Sibenik"), ("Istra 1961", "Rijeka"), ("Lok. Zagreb", "Slaven Belupo"),
-    ("Osijek", "Gorica"), ("Sibenik", "D. Zagreb"), ("Varazdin", "Hajduk Split"),
-    ("Gorica", "D. Zagreb"), ("Hajduk Split", "Istra 1961"), ("Lok. Zagreb", "Sibenik"),
-    ("Rijeka", "Osijek"), ("Slaven Belupo", "Varazdin"), ("D. Zagreb", "Rijeka"),
-    ("Istra 1961", "Slaven Belupo"), ("Osijek", "Hajduk Split"), ("Sibenik", "Gorica"),
-    ("Varazdin", "Lok. Zagreb"), ("Hajduk Split", "D. Zagreb"), ("Lok. Zagreb", "Istra 1961"),
-    ("Rijeka", "Gorica"), ("Slaven Belupo", "Osijek"), ("Varazdin", "Sibenik"),
-    ("D. Zagreb", "Slaven Belupo"), ("Gorica", "Hajduk Split"), ("Istra 1961", "Varazdin"),
-    ("Osijek", "Lok. Zagreb"), ("Sibenik", "Rijeka"), ("Hajduk Split", "Rijeka"),
-    ("Istra 1961", "Sibenik"), ("Lok. Zagreb", "D. Zagreb"), ("Slaven Belupo", "Gorica"),
-    ("Varazdin", "Osijek"), ("D. Zagreb", "Varazdin"), ("Gorica", "Lok. Zagreb"),
-    ("Osijek", "Istra 1961"), ("Rijeka", "Slaven Belupo"), ("Sibenik", "Hajduk Split")
+    ("Rijeka", "Sibenik"), ("Varazdin", "Istra 1961"), ("Lok Zagreb", "Osijek"),
+    ("Hajduk", "HNK Gorica"), ("Slaven Belupo", "Dinamo Zagreb"), ("HNK Gorica", "Slaven Belupo"),
+    ("Sibenik", "Istra 1961"), ("Dinamo Zagreb", "Lok Zagreb"), ("Osijek", "Varazdin"),
+    ("Rijeka", "Hajduk"), ("Hajduk", "Sibenik"), ("Istra 1961", "Osijek"),
+    ("Lok Zagreb", "HNK Gorica"), ("Slaven Belupo", "Rijeka"), ("Varazdin", "Dinamo Zagreb"),
+    ("Istra 1961", "Dinamo Zagreb"), ("Lok Zagreb", "Rijeka"), ("Sibenik", "Osijek"),
+    ("Slaven Belupo", "Hajduk"), ("Varazdin", "HNK Gorica"), ("Dinamo Zagreb", "Osijek"),
+    ("HNK Gorica", "Istra 1961"), ("Hajduk", "Lok Zagreb"), ("Rijeka", "Varazdin"),
+    ("Slaven Belupo", "Sibenik"), ("Istra 1961", "Rijeka"), ("Lok Zagreb", "Slaven Belupo"),
+    ("Osijek", "HNK Gorica"), ("Sibenik", "Dinamo Zagreb"), ("Varazdin", "Hajduk"),
+    ("HNK Gorica", "Dinamo Zagreb"), ("Hajduk", "Istra 1961"), ("Lok Zagreb", "Sibenik"),
+    ("Rijeka", "Osijek"), ("Slaven Belupo", "Varazdin"), ("Dinamo Zagreb", "Rijeka"),
+    ("Istra 1961", "Slaven Belupo"), ("Osijek", "Hajduk"), ("Sibenik", "HNK Gorica"),
+    ("Varazdin", "Lok Zagreb"), ("Hajduk", "Dinamo Zagreb"), ("Lok Zagreb", "Istra 1961"),
+    ("Rijeka", "HNK Gorica"), ("Slaven Belupo", "Osijek"), ("Varazdin", "Sibenik"),
+    ("Dinamo Zagreb", "Slaven Belupo"), ("HNK Gorica", "Hajduk"), ("Istra 1961", "Varazdin"),
+    ("Osijek", "Lok Zagreb"), ("Sibenik", "Rijeka"), ("Hajduk", "Rijeka"),
+    ("Istra 1961", "Sibenik"), ("Lok Zagreb", "Dinamo Zagreb"), ("Slaven Belupo", "HNK Gorica"),
+    ("Varazdin", "Osijek"), ("Dinamo Zagreb", "Varazdin"), ("HNK Gorica", "Lok Zagreb"),
+    ("Osijek", "Istra 1961"), ("Rijeka", "Slaven Belupo"), ("Sibenik", "Hajduk")
 ]
 
 num_simulations = 10000

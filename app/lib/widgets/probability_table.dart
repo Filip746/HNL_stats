@@ -80,7 +80,7 @@ class _ProbabilityTableState extends State<ProbabilityTable> {
       Row(
         children: [
           Image.asset(
-            'assets/images/${teamName.toLowerCase().replaceAll(" ", "_")}.png',
+            'images/${teamName.toLowerCase().replaceAll(" ", "_")}.png',
             width: 30,
             height: 30,
             errorBuilder: (context, error, stackTrace) =>
