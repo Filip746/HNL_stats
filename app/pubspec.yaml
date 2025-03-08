@@ -62,12 +62,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/rijeka.png
-    - assets/images/hajduk_split.png
-    - assets/images/d._zagreb.png
+    - assets/images/hajduk.png
+    - assets/images/dinamo_zagreb.png
     - assets/images/varazdin.png
     - assets/images/osijek.png
     - assets/images/slaven_belupo.png
-    - assets/images/lok._zagreb.png
+    - assets/images/lok_zagreb.png
     - assets/images/istra_1961.png
-    - assets/images/gorica.png
+    - assets/images/hnk_gorica.png
     - assets/images/sibenik.png
