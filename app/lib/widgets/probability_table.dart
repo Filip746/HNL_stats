@@ -12,41 +12,22 @@ class ProbabilityTable extends StatefulWidget {
 }
 
 class _ProbabilityTableState extends State<ProbabilityTable> {
-  late List<TeamProbability> upperTableProbabilities;
-  late List<TeamProbability> lowerTableProbabilities;
-  int _upperSortColumnIndex = 0;
-  bool _upperSortAscending = true;
-  int _lowerSortColumnIndex = 0;
-  bool _lowerSortAscending = true;
+  late List<TeamProbability> probabilities;
+  int _sortColumnIndex = 0;
+  bool _sortAscending = true;
 
   @override
   void initState() {
     super.initState();
-    upperTableProbabilities = List.from(widget.probabilities);
-    lowerTableProbabilities = List.from(widget.probabilities);
+    probabilities = List.from(widget.probabilities);
   }
 
-  void _sortUpperTable<T>(Comparable<T> Function(TeamProbability d) getField,
+  void _sortTable<T>(Comparable<T> Function(TeamProbability d) getField,
       int columnIndex, bool ascending) {
     setState(() {
-      _upperSortColumnIndex = columnIndex;
-      _upperSortAscending = ascending;
-      upperTableProbabilities.sort((a, b) {
-        final aValue = getField(a);
-        final bValue = getField(b);
-        return ascending
-            ? Comparable.compare(aValue, bValue)
-            : Comparable.compare(bValue, aValue);
-      });
-    });
-  }
-
-  void _sortLowerTable<T>(Comparable<T> Function(TeamProbability d) getField,
-      int columnIndex, bool ascending) {
-    setState(() {
-      _lowerSortColumnIndex = columnIndex;
-      _lowerSortAscending = ascending;
-      lowerTableProbabilities.sort((a, b) {
+      _sortColumnIndex = columnIndex;
+      _sortAscending = ascending;
+      probabilities.sort((a, b) {
         final aValue = getField(a);
         final bValue = getField(b);
         return ascending
@@ -98,56 +79,6 @@ class _ProbabilityTableState extends State<ProbabilityTable> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: _buildDataTable(
-              columns: [
-                DataColumn(
-                  label: const Text('Tim',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  onSort: (columnIndex, ascending) =>
-                      _sortUpperTable((d) => d.name, columnIndex, ascending),
-                ),
-                DataColumn(
-                  label: const Text('Bodovi',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  numeric: true,
-                  onSort: (columnIndex, ascending) => _sortUpperTable(
-                      (d) => d.projectedPoints, columnIndex, ascending),
-                ),
-                DataColumn(
-                  label: const Text('Prvak (%)',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  numeric: true,
-                  onSort: (columnIndex, ascending) => _sortUpperTable(
-                      (d) => d.top8Probability, columnIndex, ascending),
-                ),
-                DataColumn(
-                  label: const Text('Top 4 (%)',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  numeric: true,
-                  onSort: (columnIndex, ascending) => _sortUpperTable(
-                      (d) => d.top24Probability, columnIndex, ascending),
-                ),
-              ],
-              rows: upperTableProbabilities
-                  .map((team) => DataRow(
-                        cells: [
-                          _buildTeamCell(team.name),
-                          DataCell(
-                              Text(team.projectedPoints.toStringAsFixed(0))),
-                          DataCell(Text(
-                              '${team.top8Probability.toStringAsFixed(2)}%')),
-                          DataCell(Text(
-                              '${team.top24Probability.toStringAsFixed(2)}%')),
-                        ],
-                      ))
-                  .toList(),
-              sortColumnIndex: _upperSortColumnIndex,
-              sortAscending: _upperSortAscending,
-            ),
-          ),
-          const SizedBox(height: 20),
           const Text("Vjerojatnosti pozicija za svaki klub (%)",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           SingleChildScrollView(
@@ -158,31 +89,58 @@ class _ProbabilityTableState extends State<ProbabilityTable> {
                   label: const Text('Tim',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   onSort: (columnIndex, ascending) =>
-                      _sortLowerTable((d) => d.name, columnIndex, ascending),
+                      _sortTable((d) => d.name, columnIndex, ascending),
                 ),
                 for (int i = 1; i <= 10; i++)
                   DataColumn(
                     label: Text(i.toString(),
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                     numeric: true,
-                    onSort: (columnIndex, ascending) => _sortLowerTable(
+                    onSort: (columnIndex, ascending) => _sortTable(
                         (d) => d.positionProbabilities[columnIndex - 1],
                         columnIndex,
                         ascending),
                   ),
+                DataColumn(
+                  label: const Text('Bodovi',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  numeric: true,
+                  onSort: (columnIndex, ascending) => _sortTable(
+                      (d) => d.projectedPoints, columnIndex, ascending),
+                ),
+                DataColumn(
+                  label: const Text('Prvak (%)',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  numeric: true,
+                  onSort: (columnIndex, ascending) => _sortTable(
+                      (d) => d.top8Probability, columnIndex, ascending),
+                ),
+                DataColumn(
+                  label: const Text('Top 4 (%)',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  numeric: true,
+                  onSort: (columnIndex, ascending) => _sortTable(
+                      (d) => d.top24Probability, columnIndex, ascending),
+                ),
               ],
-              rows: lowerTableProbabilities
+              rows: probabilities
                   .map((team) => DataRow(
                         cells: [
                           _buildTeamCell(team.name),
                           for (int i = 0; i < 10; i++)
                             DataCell(Text(
                                 '${team.positionProbabilities[i].toStringAsFixed(2)}%')),
+                          DataCell(
+                              Text(team.projectedPoints.toStringAsFixed(0))),
+                          DataCell(Text(
+                              '${team.top8Probability.toStringAsFixed(2)}%')),
+                          DataCell(Text(
+                              '${team.top24Probability.toStringAsFixed(2)}%')),
                         ],
                       ))
                   .toList(),
-              sortColumnIndex: _lowerSortColumnIndex,
-              sortAscending: _lowerSortAscending,
+              sortColumnIndex: _sortColumnIndex,
+              sortAscending: _sortAscending,
             ),
           ),
         ],

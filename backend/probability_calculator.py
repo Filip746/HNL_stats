@@ -204,7 +204,7 @@ def print_results(position_probabilities, average_points, qualification_probabil
     
     print("=" * 100)
 
-# Fetch Elo ratings from API
+# Fetch Elo ratings from APIa
 elo_ratings = fetch_elo_ratings()
 if elo_ratings is not None:
     teams = elo_ratings
